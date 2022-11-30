@@ -10,59 +10,37 @@
 </head>
 <body>
 
-<div id="banner-container">
-    <p id="banner-title">Book Search</p>
-</div>
-
-<form id="search-bar-container">
-    <input name="search-field" id="search-bar" placeholder="Search a book">
-    <button name="search-button" id="search-button" type="submit" onclick="getBooks()"><i class="fa fa-search"></i></button>
-</form>
-
-<div id="result-container">
-    <p id="result-no-result">No result found</p>
-
-    <div id="result-grid">
-        <div class="result-element">
-            <div class="result-element-image-container">
-                <img class="result-element-image" alt="Result image" src="images/test.jpg">
-            </div>
-            <p class="result-element-title">Livre génial</p>
-            <p class="result-element-author">Charles Maxwell</p>
-            <p class="result-element-legend">Ceci est un test de description pour un livre qui assez sympa à lire</p>
-        </div>
-
-        <div class="result-element">
-            <div class="result-element-image-container">
-                <img class="result-element-image" alt="Result image" src="images/test.jpg">
-            </div>
-            <p class="result-element-title">Livre génial</p>
-            <p class="result-element-author">Charles Maxwell</p>
-            <p class="result-element-legend">Ceci est un test de description pour un livre qui assez sympa à lire</p>
-        </div>
-
-        <div class="result-element">
-            <div class="result-element-image-container">
-                <img class="result-element-image" alt="Result image" src="images/test.jpg">
-            </div>
-            <p class="result-element-title">Livre génial</p>
-            <p class="result-element-author">Charles Maxwell</p>
-            <p class="result-element-legend">Ceci est un test de description pour un livre qui assez sympa à lire</p>
-        </div>
-
-
+<section id="banner">
+    <div id="banner-container">
+        <p id="banner-title">Book Search</p>
     </div>
 
-</div>
+</section>
 
-<div id="result-test">
 
-</div>
+<section id="result">
+    <form id="search-bar-container">
+        <input name="search-field" id="search-bar" placeholder="Search a book">
+        <button name="search-button" id="search-button" type="button" onclick="getBooks()"><i class="fa fa-search"></i>
+        </button>
+    </form>
+
+    <div id="result-container">
+        <p id="result-message">Press search to found a book</p>
+
+        <div id="result-grid">
+
+
+        </div>
+    </div>
+</section>
+
 <footer>
-    <div id="footer-container">
-        <p id="footer-text">Copyright Esteban MAGNON and Thomas DOLIGE</p>
-    </div>
+    <p id="footer-text">Copyright Esteban MAGNON and Thomas DOLIGE</p>
+
 </footer>
 
+
+<script src="myScript.js"></script>
 </body>
 </html>
