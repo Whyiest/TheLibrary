@@ -3,16 +3,22 @@ let resultGrid;
 let resultElements = [];
 let resultImageContainer = [];
 let resultImage = [];
+let coverURL = [];
 let resultElementTitle = [];
 let resultElementAuthor = [];
 let resultElementPublishers = [];
-let coverLink = [];
+let resultElementSubjects = [];
+let resultElementHighlights = [];
 let bookLink = [];
 let resultMessage;
 let bookNumber;
 let displayResult;
-let keyValue;
-let key;
+let loadedBookNumber = -1;
+let verif1;
+let verif2;
+let currentHighlights;
+let toReplace;
+
 
 searchbar = document.getElementById('search-bar');
 resultGrid = document.getElementById("result-grid");
@@ -23,16 +29,17 @@ function getBooks() {
     if (searchbar.value === "") {
         alert("Error : you don't specify any term to search. Please retry !");
     } else {
+
         document.getElementById("result-grid").innerHTML = "";
         resultMessage.innerHTML = "Loading...";
 
-        fetch("http://openlibrary.org/search.json?q=" + searchbar.value +
+        fetch("http://openlibrary.org/search/inside.json?q=" + searchbar.value +
             {method: "GET", headers: {"Content-type": "application/json; charset=UTF-8"}})
             .then(response => response.json())
             .then(listBooks => {
 
                 console.log(listBooks);
-                bookNumber = listBooks.num_found;
+                bookNumber = listBooks.hits.total;
 
                 if (bookNumber == 0) {
                     alert("Sorry, can't find any book, please enter a valid search.");
@@ -46,77 +53,133 @@ function getBooks() {
                     } else {
                         displayResult = bookNumber;
                     }
+
+                    // ------------------ DYNAMIC ELEMENT CREATION -----------------
+
                     for (let i = 0; i < displayResult; i++) {
 
-                        resultElements.push(document.createElement("div"));
-                        resultElements[i].classList.add("result-element");
-                        resultGrid.appendChild(resultElements[i]);
+                        // Verification :
 
+                        verif1 = listBooks.hits.hits[i];
+                        verif2 = listBooks.hits.hits[i].fields;
 
-                        resultImageContainer.push(document.createElement("a"));
-                        resultImageContainer[i].classList.add("result-element-image-container");
-                        bookLink = "https://openlibrary.org/" + listBooks.docs[i].key;
-                        resultImageContainer[i].href = bookLink;
-                        resultImageContainer[i].setAttribute('target', '_blank');
-                        resultElements[i].appendChild(resultImageContainer[i]);
-
-
-                        resultImage.push(document.createElement("img"));
-                        resultImage[i].classList.add("result-element-image");
-                        resultImageContainer[i].appendChild(resultImage[i]);
-
-                        resultElementTitle.push(document.createElement("p"));
-                        resultElementTitle[i].classList.add("result-element-title");
-                        resultElements[i].appendChild(resultElementTitle[i]);
-
-                        resultElementAuthor.push(document.createElement("p"));
-                        resultElementAuthor[i].classList.add("result-element-author");
-                        resultElements[i].appendChild(resultElementAuthor[i]);
-
-                        resultElementPublishers.push(document.createElement("p"));
-                        resultElementPublishers[i].classList.add("result-element-publishers");
-                        resultElements[i].appendChild(resultElementPublishers[i]);
-
-
-                        if (typeof listBooks.docs[i].isbn !== 'undefined') {
-                            key = "isbn/";
-                            keyValue = listBooks.docs[i].isbn[0];
-                            coverLink[i] = "https://covers.openlibrary.org/b/" + key + keyValue + "-L.jpg";
-
+                        if (!("edition" in verif1) || !("highlight" in verif1) || !("meta_subjectSorter" in verif2)) {
+                            console.log("fail");
+                            displayResult++;
                         } else {
-                            coverLink[i] = "images/default-cover.png";
-                        }
+                            loadedBookNumber++;
 
-                        // Setting the values :
-
-                        resultImage[i].src = coverLink[i];
-                        resultElementTitle[i].innerHTML = listBooks.docs[i].title;
+                            resultElements.push(document.createElement("div"));
+                            resultElements[loadedBookNumber].classList.add("result-element");
+                            resultGrid.appendChild(resultElements[loadedBookNumber]);
 
 
-                        resultElementAuthor[i].innerHTML = "<span class='blackBold'>Author : </span>"
+                            resultImageContainer.push(document.createElement("a"));
+                            resultImageContainer[loadedBookNumber].classList.add("result-element-image-container");
+                            resultImageContainer[loadedBookNumber].setAttribute('target', '_blank');
+                            resultElements[loadedBookNumber].appendChild(resultImageContainer[loadedBookNumber]);
 
-                        if (Array.isArray(listBooks.docs[i].author_name)) {
-                            for (let j = 0; j < listBooks.docs[i].author_name.length; j++) {
-                                resultElementAuthor[i].innerHTML += listBooks.docs[i].author_name[j];
+
+                            resultImage.push(document.createElement("img"));
+                            resultImage[loadedBookNumber].classList.add("result-element-image");
+                            resultImageContainer[loadedBookNumber].appendChild(resultImage[loadedBookNumber]);
+
+                            resultElementTitle.push(document.createElement("p"));
+                            resultElementTitle[loadedBookNumber].classList.add("result-element-title");
+                            resultElements[loadedBookNumber].appendChild(resultElementTitle[loadedBookNumber]);
+
+                            resultElementAuthor.push(document.createElement("p"));
+                            resultElementAuthor[loadedBookNumber].classList.add("result-element-author");
+                            resultElements[loadedBookNumber].appendChild(resultElementAuthor[loadedBookNumber]);
+
+                            resultElementPublishers.push(document.createElement("p"));
+                            resultElementPublishers[loadedBookNumber].classList.add("result-element-publishers");
+                            resultElements[loadedBookNumber].appendChild(resultElementPublishers[loadedBookNumber]);
+
+                            resultElementSubjects.push(document.createElement("p"));
+                            resultElementSubjects[loadedBookNumber].classList.add("result-element-subjects");
+                            resultElements[loadedBookNumber].appendChild(resultElementSubjects[loadedBookNumber]);
+
+                            resultElementHighlights.push(document.createElement("p"));
+                            resultElementHighlights[loadedBookNumber].classList.add("result-element-highlights");
+                            resultElements[loadedBookNumber].appendChild(resultElementHighlights[loadedBookNumber]);
+
+                            // ---------------------- VALUES SETTING ZONE ----------------
+
+
+                            // ------- Setting the link to page:
+                            bookLink = "https://openlibrary.org/" + listBooks.hits.hits[i].edition.url;
+                            resultImageContainer[loadedBookNumber].href = bookLink;
+
+                            // ------- Setting the book cover
+
+                            if (typeof listBooks.hits.hits[i].edition.cover_url !== 'undefined') {
+                                coverURL[i] = listBooks.hits.hits[i].edition.cover_url;
+                            } else {
+                                coverURL[i] = "images/default-cover.png";
                             }
-                        } else if (typeof listBooks.docs[i].author_name === 'undefined') {
-                            resultElementAuthor[i].innerHTML += "Not defined";
-                        } else {
-                            resultElementAuthor[i].innerHTML += listBooks.docs[i].author_name;
-                        }
+                            resultImage[loadedBookNumber].src = coverURL[i];
+
+                            // ----- Setting title :
+                            resultElementTitle[loadedBookNumber].innerHTML = listBooks.hits.hits[i].fields.meta_title;
+
+                            // ----- Setting authors :
+
+                            resultElementAuthor[loadedBookNumber].innerHTML = "<span class='blackBold'>Author : </span>"
 
 
-                        resultElementPublishers[i].innerHTML = "<span class='blackBold'>Publishers : </span>"
-
-                        if (Array.isArray(listBooks.docs[i].publisher)) {
-                            for (let h = 0; h < listBooks.docs[i].publisher.length; h++) {
-                                resultElementPublishers[i].innerHTML += listBooks.docs[i].publisher[h];
+                            for (let j = 0; j < listBooks.hits.hits[i].edition.authors.length; j++) {
+                                if (j < 5) // Limit display
+                                    resultElementAuthor[loadedBookNumber].innerHTML += listBooks.hits.hits[i].edition.authors[j].name;
                             }
-                        } else if (typeof listBooks.docs[i].publisher === 'undefined') {
-                            resultElementPublishers[i].innerHTML += "Not defined";
-                        }
-                        else {
-                            resultElementPublishers[i].innerHTML = listBooks.docs[i].publisher;
+
+
+                            // ----- Setting publishers :
+
+                            resultElementPublishers[loadedBookNumber].innerHTML = "<span class='blackBold'>Publishers : </span>"
+
+
+                            for (let h = 0; h < listBooks.hits.hits[i].fields.meta_publisher.length; h++) {
+                                if (h < 5) // Limit display
+                                    resultElementPublishers[loadedBookNumber].innerHTML += listBooks.hits.hits[i].fields.meta_publisher[h];
+                            }
+
+                            // ----- Setting subjects :
+
+                            resultElementSubjects[loadedBookNumber].innerHTML = "<span class='blackBold'>Subjects : </span>"
+
+                            for (let z = 0; z < listBooks.hits.hits[i].fields.meta_subjectSorter.length; z++) {
+                                if (z < 5) // Limit display
+                                    resultElementSubjects[loadedBookNumber].innerHTML += listBooks.hits.hits[i].fields.meta_subjectSorter[z];
+                            }
+
+
+                            // Setting highlight :
+
+                            resultElementHighlights[loadedBookNumber].innerHTML = "<span class='blackBold'>Highlight : </span>"
+
+                            for (let b = 0; b < listBooks.hits.hits[i].highlight.text.length; b++) {
+
+                                toReplace = "<span class=black> " + searchbar.value + " </span>";
+
+                                if (b <= 4) {// Limit display
+                                    currentHighlights = listBooks.hits.hits[i].highlight.text[b];
+                                    try {
+                                        currentHighlights = currentHighlights.replace(/{{{.*}}}/, toReplace);
+                                        currentHighlights = currentHighlights.replace("{{{", "");
+                                        currentHighlights = currentHighlights.replace("{{{OBJECT Object}}}", toReplace);
+                                        currentHighlights = currentHighlights.replace(/{{{.*}}}/, toReplace);
+                                        currentHighlights = currentHighlights.replace("}}}", "");
+                                        currentHighlights = currentHighlights.replace("OBJECT", "");
+                                        currentHighlights = currentHighlights.replace("object", toReplace);
+                                    } catch (error) {
+                                        console.log(error);
+                                    };
+                                }
+
+                                resultElementHighlights[loadedBookNumber].innerHTML += "&laquo; " + currentHighlights
+                                + " &raquo;<br><br>";
+                            }
                         }
                     }
                 }
