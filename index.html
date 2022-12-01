@@ -12,6 +12,10 @@
 
 <section id="banner">
     <div id="banner-container">
+        <div id="switcher-container" onclick="switchSearch(searchState)">
+            <p id = "switcher-text">Search by <span class="switch-state-color">title</span></p>
+            <img id = "switcher-icon" src="images/switchImage.svg" alt="switch arrow">;
+        </div>
         <p id="banner-title">The Library</p>
     </div>
 
@@ -20,8 +24,8 @@
 
 <section id="result">
     <form id="search-bar-container">
-        <input name="search-field" id="search-bar" placeholder="Search a book">
-        <button name="search-button" id="search-button" type="button" onclick="getBooks()"><i class="fa fa-search"></i>
+        <input name="search-field" id="search-bar" placeholder="Search the content inside a book">
+        <button name="search-button" id="search-button" type="button" onclick="getBooksByContent()"><i class="fa fa-search"></i>
         </button>
     </form>
 
@@ -41,6 +45,7 @@
 </footer>
 
 
-<script src="myScript.js"></script>
+<script src="getBooks.js"></script>
+<script src="searchSwitch.js"></script>
 </body>
 </html>

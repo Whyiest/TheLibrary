@@ -27,6 +27,43 @@ body {
 
 }
 
+#switcher-container {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    background-color: #211c1a;
+    width: 15%;
+    height: 2em;
+    border: solid #c0b73e 1px;
+    border-radius: 20px;
+    position: absolute;
+    left: 2%;
+    top: 2%;
+}
+
+#switcher-container:hover {
+    background-color: #362f2d;
+    cursor: pointer;
+}
+
+#switcher-text{
+    display: inline-block;
+    text-align: center;
+    margin: auto;
+    font-size: 0.9em;
+    color: white;
+    font-weight: bold;
+}
+
+#switcher-icon {
+    position: relative;
+    height: 100%;
+    display: inline-block;
+}
+
+.switch-state-color {
+    color: #ea5a22;
+}
 #banner-container {
     object-fit: fill;
     width: 100%;
@@ -144,27 +181,54 @@ body {
     font-weight: bold;
     font-size: 1.1em;
     text-align: center;
+    animation: append-fadein .3s linear ;
 }
 
 .result-element-author {
     font-size: 0.9em;
     color: grey;
+    animation: append-fadein .3.5s linear ;
 }
 
 .result-element-publishers {
     font-size: 0.9em;
     color: grey;
+    animation: append-fadein .4s linear ;
 }
 
-.result-element-subjects {
+
+.result-element-subjects-container {
+    padding-left: 2%;
+    width: 96%;
+    padding-right: 2%;
     font-size: 0.9em;
-    color: grey;
+    height: fit-content;
 }
+.result-element-subjects {
+    width: fit-content;
+    display: inline-block;
+    color: grey;
+    animation: append-fadein .4s linear ;
+}
+
+.result-element-subjects:visited {
+    color: #4b4949;
+}
+
+.result-element-subjects:hover {
+    color: saddlebrown;
+}
+
+.result-element-subjects:active {
+    color: saddlebrown;
+}
+
 
 .result-element-highlights {
     font-size: 0.9em;
     color: grey;
     font-style: italic;
+    animation: append-fadein .4.5s linear ;
 }
 
 .blackBold {
@@ -203,8 +267,21 @@ footer {
     margin: auto;
 }
 
+
+
+@keyframes append-fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 @media screen and (max-width: 950px) {
 
+    #switcher-container {
+        width: 20%
+    }
     #result-grid {
         width: 90%;
         margin-left: 5%;
@@ -214,6 +291,10 @@ footer {
 
 
 @media screen and (max-width: 750px) {
+
+    #switcher-container {
+        width: 23%
+    }
 
     #result-grid {
         grid-template-columns: 1fr 1fr;
@@ -233,6 +314,9 @@ footer {
 
 @media screen and (max-width: 550px) {
 
+    #switcher-container {
+        width: 30%
+    }
     #banner-title {
         font-size: 3.0em;
     }

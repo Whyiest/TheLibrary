@@ -8,7 +8,9 @@ let resultElementTitle = [];
 let resultElementAuthor = [];
 let resultElementPublishers = [];
 let resultElementSubjects = [];
+let resultSubjects = [];
 let resultElementHighlights = [];
+let coverLink = [];
 let bookLink = [];
 let resultMessage;
 let bookNumber;
@@ -18,13 +20,14 @@ let verif1;
 let verif2;
 let currentHighlights;
 let toReplace;
+let subjectLength;
 
 
 searchbar = document.getElementById('search-bar');
 resultGrid = document.getElementById("result-grid");
 resultMessage = document.getElementById("result-message");
 
-function getBooks() {
+function getBooksByContent() {
 
     if (searchbar.value === "") {
         alert("Error : you don't specify any term to search. Please retry !");
@@ -46,7 +49,7 @@ function getBooks() {
                     resultMessage.innerHTML = "No result found";
                 } else {
 
-                    resultMessage.innerHTML = bookNumber + " books founds :";
+                    resultMessage.innerHTML = bookNumber + " books founds, book list :";
 
                     if (bookNumber > 15) {
                         displayResult = 15;
@@ -63,7 +66,7 @@ function getBooks() {
                         verif1 = listBooks.hits.hits[i];
                         verif2 = listBooks.hits.hits[i].fields;
 
-                        if (!("edition" in verif1) || !("highlight" in verif1) || !("meta_subjectSorter" in verif2)) {
+                        if (!("edition" in verif1) || !("highlight" in verif1) || !("meta_subjectSorter" in verif2) || !("meta_publisher" in verif2)) {
                             console.log("fail");
                             displayResult++;
                         } else {
@@ -86,6 +89,7 @@ function getBooks() {
 
                             resultElementTitle.push(document.createElement("p"));
                             resultElementTitle[loadedBookNumber].classList.add("result-element-title");
+                            resultElementTitle[loadedBookNumber].classList.add("visible");
                             resultElements[loadedBookNumber].appendChild(resultElementTitle[loadedBookNumber]);
 
                             resultElementAuthor.push(document.createElement("p"));
@@ -96,8 +100,8 @@ function getBooks() {
                             resultElementPublishers[loadedBookNumber].classList.add("result-element-publishers");
                             resultElements[loadedBookNumber].appendChild(resultElementPublishers[loadedBookNumber]);
 
-                            resultElementSubjects.push(document.createElement("p"));
-                            resultElementSubjects[loadedBookNumber].classList.add("result-element-subjects");
+                            resultElementSubjects.push(document.createElement("div"));
+                            resultElementSubjects[loadedBookNumber].classList.add("result-element-subjects-container");
                             resultElements[loadedBookNumber].appendChild(resultElementSubjects[loadedBookNumber]);
 
                             resultElementHighlights.push(document.createElement("p"));
@@ -146,12 +150,31 @@ function getBooks() {
 
                             // ----- Setting subjects :
 
-                            resultElementSubjects[loadedBookNumber].innerHTML = "<span class='blackBold'>Subjects : </span>"
+                            subjectLength = listBooks.hits.hits[i].fields.meta_subjectSorter.length;
+                            resultSubjects = null;
 
-                            for (let z = 0; z < listBooks.hits.hits[i].fields.meta_subjectSorter.length; z++) {
-                                if (z < 5) // Limit display
-                                    resultElementSubjects[loadedBookNumber].innerHTML += listBooks.hits.hits[i].fields.meta_subjectSorter[z];
+                            // Limiting the amount of subject displayed
+                            if (subjectLength < 10) {
+                                resultSubjects = new Array(subjectLength);
+                            } else {
+                                resultSubjects = new Array(10);
+                                subjectLength = 10; // 10 elements + 1 = 11 but -1 because we start at 0
                             }
+
+
+                            resultSubjects[0] = document.createElement("a");
+                            resultSubjects[0].innerHTML = "<span class='blackBold'>Subjects : </span>";
+                            resultElementSubjects[loadedBookNumber].appendChild(resultSubjects[0]);
+
+                            for (let z = 0; z < subjectLength; z++) {
+
+                                resultSubjects[z+1] = document.createElement("a");
+                                resultSubjects[z+1].classList.add("result-element-subjects");
+                                resultSubjects[z+1].innerHTML = listBooks.hits.hits[i].fields.meta_subjectSorter[z];
+                                resultElementSubjects[loadedBookNumber].appendChild(resultSubjects[z+1]);
+
+                            }
+
 
 
                             // Setting highlight :
@@ -174,11 +197,12 @@ function getBooks() {
                                         currentHighlights = currentHighlights.replace("object", toReplace);
                                     } catch (error) {
                                         console.log(error);
-                                    };
+                                    }
+                                    ;
                                 }
 
                                 resultElementHighlights[loadedBookNumber].innerHTML += "&laquo; " + currentHighlights
-                                + " &raquo;<br><br>";
+                                    + " &raquo;<br><br>";
                             }
                         }
                     }
@@ -189,6 +213,121 @@ function getBooks() {
 }
 
 
+
+function getBooksByTitle() {
+
+    if (searchbar.value === "") {
+        alert("Error : you don't specify any term to search. Please retry !");
+    } else {
+        document.getElementById("result-grid").innerHTML = "";
+        resultMessage.innerHTML = "Loading...";
+
+        fetch("http://openlibrary.org/search.json?q=" + searchbar.value +
+            {method: "GET", headers: {"Content-type": "application/json; charset=UTF-8"}})
+            .then(response => response.json())
+            .then(listBooks => {
+
+                console.log(listBooks);
+                bookNumber = listBooks.num_found;
+
+                if (bookNumber == 0) {
+                    alert("Sorry, can't find any book, please enter a valid search.");
+                    resultMessage.innerHTML = "No result found";
+                } else {
+
+                    resultMessage.innerHTML = bookNumber + " books founds :";
+
+                    if (bookNumber > 15) {
+                        displayResult = 15;
+                    } else {
+                        displayResult = bookNumber;
+                    }
+                    for (let i = 0; i < displayResult; i++) {
+
+                        resultElements.push(document.createElement("div"));
+                        resultElements[i].classList.add("result-element");
+                        resultGrid.appendChild(resultElements[i]);
+
+
+                        resultImageContainer.push(document.createElement("a"));
+                        resultImageContainer[i].classList.add("result-element-image-container");
+                        bookLink = "https://openlibrary.org/" + listBooks.docs[i].key;
+                        resultImageContainer[i].href = bookLink;
+                        resultImageContainer[i].setAttribute('target', '_blank');
+                        resultElements[i].appendChild(resultImageContainer[i]);
+
+
+                        resultImage.push(document.createElement("img"));
+                        resultImage[i].classList.add("result-element-image");
+                        resultImageContainer[i].appendChild(resultImage[i]);
+
+                        resultElementTitle.push(document.createElement("p"));
+                        resultElementTitle[i].classList.add("result-element-title");
+                        resultElements[i].appendChild(resultElementTitle[i]);
+
+                        resultElementAuthor.push(document.createElement("p"));
+                        resultElementAuthor[i].classList.add("result-element-author");
+                        resultElements[i].appendChild(resultElementAuthor[i]);
+
+                        resultElementPublishers.push(document.createElement("p"));
+                        resultElementPublishers[i].classList.add("result-element-publishers");
+                        resultElements[i].appendChild(resultElementPublishers[i]);
+
+
+                        let response = fetch("http://openlibrary.org/search.json?q=" + document.getElementById("search-bar").value +
+                            {method : "GET", headers: {"Content-type" : "application/json; charset=UTF-8"}
+                            })
+                            .then(response => response.json())
+                            .then(json => console.log(json))
+                            .catch(err => console.log("err"));
+
+
+                        if (typeof listBooks.docs[i].isbn !== 'undefined') {
+                            key = "isbn/";
+                            keyValue = listBooks.docs[i].isbn[0];
+                            coverLink[i] = "https://covers.openlibrary.org/b/" + key + keyValue + "-L.jpg";
+
+                        } else {
+                            coverLink[i] = "images/default-cover.png";
+                        }
+
+                        // Setting the values :
+
+                        resultImage[i].src = coverLink[i];
+                        resultElementTitle[i].innerHTML = listBooks.docs[i].title;
+
+
+                        resultElementAuthor[i].innerHTML = "<span class='blackBold'>Author : </span>"
+
+                        if (Array.isArray(listBooks.docs[i].author_name)) {
+                            for (let j = 0; j < listBooks.docs[i].author_name.length; j++) {
+                                resultElementAuthor[i].innerHTML += listBooks.docs[i].author_name[j];
+                            }
+                        } else if (typeof listBooks.docs[i].author_name === 'undefined') {
+                            resultElementAuthor[i].innerHTML += "Not defined";
+                        } else {
+                            resultElementAuthor[i].innerHTML += listBooks.docs[i].author_name;
+                        }
+
+
+                        resultElementPublishers[i].innerHTML = "<span class='blackBold'>Publishers : </span>"
+
+                        if (Array.isArray(listBooks.docs[i].publisher)) {
+                            for (let h = 0; h < listBooks.docs[i].publisher.length; h++) {
+                                resultElementPublishers[i].innerHTML += listBooks.docs[i].publisher[h];
+                            }
+                        } else if (typeof listBooks.docs[i].publisher === 'undefined') {
+                            resultElementPublishers[i].innerHTML += "Not defined";
+                        }
+                        else {
+                            resultElementPublishers[i].innerHTML = listBooks.docs[i].publisher;
+                        }
+                    }
+                }
+            });
+    }
+    return false;
+}
 // Execute search when pressing enter.
 
 setInterval(checkEmpty, 100);
