@@ -42,8 +42,15 @@ body {
 }
 
 #switcher-container:hover {
-    background-color: #362f2d;
+    background-color: #2f2c29;
     cursor: pointer;
+    scale: 110%;
+}
+
+#switcher-container:hover  #switcher-icon {
+    transition: ease 0.7s;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
 }
 
 #switcher-text{

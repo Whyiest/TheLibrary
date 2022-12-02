@@ -27,11 +27,31 @@ searchbar = document.getElementById('search-bar');
 resultGrid = document.getElementById("result-grid");
 resultMessage = document.getElementById("result-message");
 
+
+function resetData() {
+
+    resultElements = [];
+    resultImageContainer = [];
+    resultImage = [];
+    coverURL = [];
+    resultElementTitle = [];
+    resultElementAuthor = [];
+    resultElementPublishers = [];
+    resultElementSubjects = [];
+    resultSubjects = [];
+    resultElementHighlights = [];
+    coverLink = [];
+    bookLink = [];
+
+}
+
 function getBooksByContent() {
 
     if (searchbar.value === "") {
         alert("Error : you don't specify any term to search. Please retry !");
     } else {
+
+        resetData();
 
         document.getElementById("result-grid").innerHTML = "";
         resultMessage.innerHTML = "Loading...";
@@ -168,13 +188,12 @@ function getBooksByContent() {
 
                             for (let z = 0; z < subjectLength; z++) {
 
-                                resultSubjects[z+1] = document.createElement("a");
-                                resultSubjects[z+1].classList.add("result-element-subjects");
-                                resultSubjects[z+1].innerHTML = listBooks.hits.hits[i].fields.meta_subjectSorter[z];
-                                resultElementSubjects[loadedBookNumber].appendChild(resultSubjects[z+1]);
+                                resultSubjects[z + 1] = document.createElement("a");
+                                resultSubjects[z + 1].classList.add("result-element-subjects");
+                                resultSubjects[z + 1].innerHTML = listBooks.hits.hits[i].fields.meta_subjectSorter[z];
+                                resultElementSubjects[loadedBookNumber].appendChild(resultSubjects[z + 1]);
 
                             }
-
 
 
                             // Setting highlight :
@@ -213,12 +232,14 @@ function getBooksByContent() {
 }
 
 
-
 function getBooksByTitle() {
 
     if (searchbar.value === "") {
         alert("Error : you don't specify any term to search. Please retry !");
     } else {
+
+        resetData();
+
         document.getElementById("result-grid").innerHTML = "";
         resultMessage.innerHTML = "Loading...";
 
@@ -275,7 +296,8 @@ function getBooksByTitle() {
 
 
                         let response = fetch("http://openlibrary.org/search.json?q=" + document.getElementById("search-bar").value +
-                            {method : "GET", headers: {"Content-type" : "application/json; charset=UTF-8"}
+                            {
+                                method: "GET", headers: {"Content-type": "application/json; charset=UTF-8"}
                             })
                             .then(response => response.json())
                             .then(json => console.log(json))
@@ -318,8 +340,7 @@ function getBooksByTitle() {
                             }
                         } else if (typeof listBooks.docs[i].publisher === 'undefined') {
                             resultElementPublishers[i].innerHTML += "Not defined";
-                        }
-                        else {
+                        } else {
                             resultElementPublishers[i].innerHTML = listBooks.docs[i].publisher;
                         }
                     }
@@ -328,6 +349,7 @@ function getBooksByTitle() {
     }
     return false;
 }
+
 // Execute search when pressing enter.
 
 setInterval(checkEmpty, 100);

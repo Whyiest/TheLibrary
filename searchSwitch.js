@@ -12,7 +12,7 @@ function switchSearch (searchState) {
 
     if (searchState[0] == 0) {
         resultGrid.innerHTML = "";
-        searchText.innerHTML = "Search by <span class=\"switch-state-color\">content</span>";
+        searchText.innerHTML = "Search by <span class=\"switch-state-color\">title</span>";
         searchBarText.placeholder = "Search a book by specify his title";
         searchButton.setAttribute('onclick','getBooksByTitle()')
 
@@ -20,7 +20,7 @@ function switchSearch (searchState) {
     }
     else if (searchState[0] == 1) {
         resultGrid.innerHTML = "";
-        searchText.innerHTML = "Search by <span class=\"switch-state-color\">title</span>";
+        searchText.innerHTML = "Search by <span class=\"switch-state-color\">content</span>";
         searchBarText.placeholder = "Search the content inside a book";
         searchButton.setAttribute('onclick','getBooksByContent()')
 
