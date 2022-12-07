@@ -236,7 +236,6 @@ function getBooksByContent() {
     return false;
 }
 
-
 function getBooksByTitle() {
 
     if (searchbar.value === "") {
@@ -248,103 +247,159 @@ function getBooksByTitle() {
         document.getElementById("result-grid").innerHTML = "";
         resultMessage.innerHTML = "Loading...";
 
-        fetch("http://openlibrary.org/search.json?q=" + searchbar.value +
+        fetch("http://openlibrary.org/search.json?title=" + searchbar.value +
             {method: "GET", headers: {"Content-type": "application/json; charset=UTF-8"}})
             .then(response => response.json())
             .then(listBooks => {
 
-                console.log(listBooks);
-                bookNumber = listBooks.num_found;
+                    console.log(listBooks);
+                    bookNumber = listBooks.num_found;
 
-                if (bookNumber == 0) {
-                    alert("Sorry, can't find any book, please enter a valid search.");
-                    resultMessage.innerHTML = "No result found";
-                } else {
-
-                    resultMessage.innerHTML = bookNumber + " books founds :";
-
-                    if (bookNumber > 15) {
-                        displayResult = 15;
+                    if (bookNumber == 0) {
+                        alert("Sorry, can't find any book, please enter a valid search.");
+                        resultMessage.innerHTML = "No result found";
                     } else {
-                        displayResult = bookNumber;
-                    }
-                    for (let i = 0; i < displayResult; i++) {
 
-                        if (listBooks.docs[i].cover_i) {
+                        resultMessage.innerHTML = bookNumber + " books founds :";
 
-                            resultElements.push(document.createElement("div"));
-                            resultElements[loadedBookNumber].classList.add("result-element");
-                            resultGrid.appendChild(resultElements[loadedBookNumber]);
-
-
-                            resultImageContainer.push(document.createElement("a"));
-                            resultImageContainer[loadedBookNumber].classList.add("result-element-image-container");
-                            bookLink = "https://openlibrary.org/" + listBooks.docs[i].key;
-                            resultImageContainer[loadedBookNumber].href = bookLink;
-                            resultImageContainer[loadedBookNumber].setAttribute('target', '_blank');
-                            resultElements[loadedBookNumber].appendChild(resultImageContainer[loadedBookNumber]);
-
-
-                            resultImage.push(document.createElement("img"));
-                            resultImage[loadedBookNumber].classList.add("result-element-image");
-                            resultImageContainer[loadedBookNumber].appendChild(resultImage[loadedBookNumber]);
-
-                            resultElementTitle.push(document.createElement("p"));
-                            resultElementTitle[loadedBookNumber].classList.add("result-element-title");
-                            resultElements[loadedBookNumber].appendChild(resultElementTitle[loadedBookNumber]);
-
-                            resultElementAuthor.push(document.createElement("p"));
-                            resultElementAuthor[loadedBookNumber].classList.add("result-element-author");
-                            resultElements[loadedBookNumber].appendChild(resultElementAuthor[loadedBookNumber]);
-
-                            resultElementPublishers.push(document.createElement("p"));
-                            resultElementPublishers[loadedBookNumber].classList.add("result-element-publishers");
-                            resultElements[loadedBookNumber].appendChild(resultElementPublishers[loadedBookNumber]);
-
-
-                            coverLink[loadedBookNumber] = "http://covers.openlibrary.org/b/id/" + listBooks.docs[i].cover_i + "-L.jpg";
-
-                            // Setting the values :
-
-                            resultImage[loadedBookNumber].src = coverLink[loadedBookNumber];
-                            resultElementTitle[loadedBookNumber].innerHTML = listBooks.docs[i].title;
-
-
-                            resultElementAuthor[loadedBookNumber].innerHTML = "<span class='blackBold'>Author : </span>"
-
-                            if (Array.isArray(listBooks.docs[i].author_name)) {
-                                for (let j = 0; j < listBooks.docs[i].author_name.length; j++) {
-                                    resultElementAuthor[loadedBookNumber].innerHTML += listBooks.docs[i].author_name[j];
-                                }
-                            } else if (typeof listBooks.docs[i].author_name === 'undefined') {
-                                resultElementAuthor[loadedBookNumber].innerHTML += "Not defined";
-                            } else {
-                                resultElementAuthor[loadedBookNumber].innerHTML += listBooks.docs[i].author_name;
-                            }
-
-
-                            resultElementPublishers[loadedBookNumber].innerHTML = "<span class='blackBold'>Publishers : </span>"
-
-                            if (Array.isArray(listBooks.docs[i].publisher)) {
-                                for (let h = 0; h < listBooks.docs[i].publisher.length; h++) {
-                                    resultElementPublishers[loadedBookNumber].innerHTML += listBooks.docs[i].publisher[h];
-                                }
-                            } else if (typeof listBooks.docs[i].publisher === 'undefined') {
-                                resultElementPublishers[loadedBookNumber].innerHTML += "Not defined";
-                            } else {
-                                resultElementPublishers[loadedBookNumber].innerHTML = listBooks.docs[i].publisher;
-                            }
-
-                            loadedBookNumber++;
+                        if (bookNumber > 15) {
+                            displayResult = 15;
                         } else {
-                            displayResult++;
+                            displayResult = bookNumber;
+                        }
+                        for (let i = 0; i < displayResult; i++) {
+
+                            if (displayResult > bookNumber) {
+                                break;
+                            }
+
+                            verif1 = listBooks.docs[i];
+
+                            if (!("cover_i" in verif1) || !("subject" in verif1)) {
+                                console.log("fail");
+                                displayResult++;
+                            } else {
+
+                                resultElements.push(document.createElement("div"));
+                                resultElements[loadedBookNumber].classList.add("result-element");
+                                resultGrid.appendChild(resultElements[loadedBookNumber]);
+
+
+                                resultImageContainer.push(document.createElement("a"));
+                                resultImageContainer[loadedBookNumber].classList.add("result-element-image-container");
+                                bookLink = "https://openlibrary.org/" + listBooks.docs[i].key;
+                                resultImageContainer[loadedBookNumber].href = bookLink;
+                                resultImageContainer[loadedBookNumber].setAttribute('target', '_blank');
+                                resultElements[loadedBookNumber].appendChild(resultImageContainer[loadedBookNumber]);
+
+
+                                resultImage.push(document.createElement("img"));
+                                resultImage[loadedBookNumber].classList.add("result-element-image");
+                                resultImageContainer[loadedBookNumber].appendChild(resultImage[loadedBookNumber]);
+
+                                resultElementTitle.push(document.createElement("p"));
+                                resultElementTitle[loadedBookNumber].classList.add("result-element-title");
+                                resultElements[loadedBookNumber].appendChild(resultElementTitle[loadedBookNumber]);
+
+                                resultElementAuthor.push(document.createElement("p"));
+                                resultElementAuthor[loadedBookNumber].classList.add("result-element-author");
+                                resultElements[loadedBookNumber].appendChild(resultElementAuthor[loadedBookNumber]);
+
+                                resultElementPublishers.push(document.createElement("p"));
+                                resultElementPublishers[loadedBookNumber].classList.add("result-element-publishers");
+                                resultElements[loadedBookNumber].appendChild(resultElementPublishers[loadedBookNumber]);
+
+                                resultElementSubjects.push(document.createElement("div"));
+                                resultElementSubjects[loadedBookNumber].classList.add("result-element-subjects-container");
+                                resultElements[loadedBookNumber].appendChild(resultElementSubjects[loadedBookNumber]);
+
+                                coverLink[loadedBookNumber] = "http://covers.openlibrary.org/b/id/" + listBooks.docs[i].cover_i + "-L.jpg";
+
+                                // Setting the values :
+
+                                resultImage[loadedBookNumber].src = coverLink[loadedBookNumber];
+                                resultElementTitle[loadedBookNumber].innerHTML = listBooks.docs[i].title;
+
+
+                                resultElementAuthor[loadedBookNumber].innerHTML = "<span class='blackBold'>Author : </span>"
+
+                                if (Array.isArray(listBooks.docs[i].author_name)) {
+                                    for (let j = 0; j < listBooks.docs[i].author_name.length; j++) {
+                                        resultElementAuthor[loadedBookNumber].innerHTML += listBooks.docs[i].author_name[j];
+                                    }
+                                } else if (typeof listBooks.docs[i].author_name === 'undefined') {
+                                    resultElementAuthor[loadedBookNumber].innerHTML += "Not defined";
+                                } else {
+                                    resultElementAuthor[loadedBookNumber].innerHTML += listBooks.docs[i].author_name;
+                                }
+
+
+                                resultElementPublishers[loadedBookNumber].innerHTML = "<span class='blackBold'>Publishers : </span>"
+
+                                if (Array.isArray(listBooks.docs[i].publisher)) {
+                                    for (let h = 0; h < listBooks.docs[i].publisher.length; h++) {
+                                        resultElementPublishers[loadedBookNumber].innerHTML += listBooks.docs[i].publisher[h];
+                                    }
+                                } else if (typeof listBooks.docs[i].publisher === 'undefined') {
+                                    resultElementPublishers[loadedBookNumber].innerHTML += "Not defined";
+                                } else {
+                                    resultElementPublishers[loadedBookNumber].innerHTML = listBooks.docs[i].publisher;
+                                }
+
+                                // ----- Setting subjects :
+
+                                subjectLength = listBooks.docs[i].subject.length;
+                                resultSubjects = null;
+
+                                // Limiting the amount of subject displayed
+                                if (subjectLength < 10) {
+                                    resultSubjects = new Array(subjectLength);
+                                } else {
+                                    resultSubjects = new Array(10);
+                                    subjectLength = 10; // 10 elements + 1 = 11 but -1 because we start at 0
+                                }
+
+
+                                resultSubjects[0] = document.createElement("a");
+                                resultSubjects[0].innerHTML = "<span class='blackBold'>Subjects : </span>";
+                                resultElementSubjects[loadedBookNumber].appendChild(resultSubjects[0]);
+
+                                for (let z = 0; z < subjectLength; z++) {
+
+                                    resultSubjects[z + 1] = document.createElement("a");
+                                    resultSubjects[z + 1].classList.add("result-element-subjects");
+                                    resultSubjects[z + 1].innerHTML = listBooks.docs[i].subject[z] + "&nbsp;";
+                                    resultElementSubjects[loadedBookNumber].appendChild(resultSubjects[z + 1]);
+                                }
+                                loadedBookNumber++;
+                            }
                         }
                     }
                 }
-            });
+            )
+        ;
     }
     return false;
 }
+
+// Execute search when pressing enter.
+
+setInterval(checkEmpty, 100);
+
+function checkEmpty() {
+    if (searchbar.value == "") {
+        resultGrid.innerHTML = "";
+        resultMessage.innerHTML = "Search a book with the field above !";
+    }
+}
+
+searchbar.addEventListener("keypress", function (event) {
+
+    if (event.key === "Enter") {
+        event.preventDefault();
+        document.getElementById("search-button").click();
+    }
+});
 
 // Execute search when pressing enter.
 

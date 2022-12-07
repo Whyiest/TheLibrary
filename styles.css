@@ -186,6 +186,7 @@ body {
 }
 .result-element-title {
     font-weight: bold;
+
     font-size: 1.1em;
     text-align: center;
     animation: append-fadein .3s linear ;
