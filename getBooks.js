@@ -269,14 +269,14 @@ function getBooksByTitle() {
                         }
                         for (let i = 0; i < displayResult; i++) {
 
-                            if (displayResult > bookNumber) {
+                            if (i > bookNumber) {
                                 break;
                             }
 
                             verif1 = listBooks.docs[i];
 
                             if (!("cover_i" in verif1) || !("subject" in verif1)) {
-                                console.log("fail");
+                                console.log("A JSON key is missing. Ignoring this book.");
                                 displayResult++;
                             } else {
 
