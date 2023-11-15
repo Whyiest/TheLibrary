@@ -1,8 +1,4 @@
-# TheLibrary
-Book search engine - McGill university project
-Understood, I'll write the README for "The Library" in English and mention that it's part of a project for McGill University in Canada.
 
----
 
 # The Library
 
